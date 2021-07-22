@@ -1,20 +1,25 @@
 <script>
-  export let name;
+  import Welcome from './screens/Welcome.svelte';
+  let state = 'welcome';
 </script>
 
 <main>
-  <h1>Hello {name}!</h1>
-  <p>
-    Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
-    how to build Svelte apps.
-  </p>
+  {#if state === 'welcome'}
+    <Welcome />
+  {:else if state === 'playing'}
+    <p>Playing content here</p>
+  {/if}
 </main>
 
 <style>
   main {
     text-align: center;
     padding: 1em;
-    max-width: 240px;
+    max-width: 800px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     margin: 0 auto;
   }
 
