@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { select } from './select';
   import Welcome from './screens/Welcome.svelte';
+  import Game from './screens/Game.svelte';
 
   let state = 'welcome'; // or 'playing'
   let celebsPromise;
@@ -11,7 +12,6 @@
     const { celebs, lookup } = await celebsPromise;
     selection = select(celebs, lookup, e.detail.category.slug);
     state = 'playing';
-    console.log(selection);
   };
 
   const loadCelebs = async () => {
@@ -44,7 +44,7 @@
   {#if state === 'welcome'}
     <Welcome on:select={start} />
   {:else if state === 'playing'}
-    <p>Playing content here</p>
+    <Game {selection} />
   {/if}
 </main>
 
