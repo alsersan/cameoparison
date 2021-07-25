@@ -19,6 +19,7 @@
   let i = 0;
   let lastResult;
   let showIcon;
+  const results = Array(selection.length);
 
   const submit = async (a, b, sign) => {
     lastResult = Math.sign(a.price - b.price) === sign ? 'right' : 'wrong';
@@ -26,6 +27,7 @@
 
     await sleep(1500);
     showIcon = false;
+    results[i] = lastResult;
     if (i < selection.length - 1) {
       i += 1;
     } else {
@@ -87,8 +89,17 @@
   />
 {/if}
 
-<div class="results">
-  <p>Results go here</p>
+<div
+  class="results"
+  style="grid-template-columns: repeat({results.length}, 1fr);"
+>
+  {#each results as result}
+    <span class="result">
+      {#if result}
+        <img src="/icons/{result}.svg" alt="{result} answer" />
+      {/if}
+    </span>
+  {/each}
 </div>
 
 <style>
@@ -127,6 +138,28 @@
     left: calc(50vw - 25vmin);
     top: calc(50vh - 25vmin);
     opacity: 0.5;
+  }
+
+  .results {
+    display: grid;
+    grid-gap: 0.2em;
+    width: 100%;
+    max-width: 320px;
+    margin: 1em auto 0 auto;
+  }
+
+  .result {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    padding: 0 0 100% 0;
+  }
+
+  .result img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
   }
 
   @media (min-width: 640px) {
