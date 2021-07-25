@@ -1,17 +1,17 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { sleep } from '../utils';
-  import { pickRandom } from '../utils';
+  import { sleep, pickRandom, loadImage } from '../utils';
   import Card from '../components/Card.svelte';
 
   export let selection;
-  console.log(selection);
 
   const loadDetails = async (celeb) => {
     const res = await fetch(
       `https://cameo-explorer.netlify.app/celebs/${celeb}.json`
     );
-    return await res.json();
+    const details = await res.json();
+    await loadImage(details.image);
+    return details;
   };
 
   const promises = selection.map((round) =>
@@ -68,7 +68,11 @@
       <button on:click={() => dispatch('restart')}>Back to main screen</button>
     </div>
   {:else}
-    {#await promises[i] then [a, b]}
+    {#await promises[i]}
+      <div class="loading">
+        <div class="loading-animation">Loading</div>
+      </div>
+    {:then [a, b]}
       <div class="game">
         <div class="card-container">
           <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
@@ -134,6 +138,30 @@
 <style>
   .game-container {
     flex: 1;
+  }
+
+  .loading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+  }
+
+  .loading-animation:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    animation: ellipsis steps(4, end) 750ms infinite;
+    content: '\2026'; /* ascii code for the ellipsis character */
+    width: 0px;
+  }
+
+  @keyframes ellipsis {
+    to {
+      width: 40px;
+    }
   }
 
   .game {
