@@ -42,11 +42,9 @@
     const ratio = rightAnswers / questions;
     if (ratio < 0.5)
       return pickRandom(['Ouch', `That wasn't very good`, 'Must try harder']);
-    if (ratio >= 0.5 && ratio < 0.8)
-      return pickRandom(['Not bad!', 'Keep practicing!']);
-    if (ratio >= 0.8 && ratio < 1)
-      return pickRandom(['So close!', 'Almost there!']);
-    if (ratio === 1) return pickRandom(['You rock!', 'Flawless victory']);
+    if (ratio < 0.8) return pickRandom(['Not bad!', 'Keep practicing!']);
+    if (ratio < 1) return pickRandom(['So close!', 'Almost there!']);
+    return pickRandom(['You rock!', 'Flawless victory']);
   };
 </script>
 
