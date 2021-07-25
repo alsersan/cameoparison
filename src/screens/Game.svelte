@@ -59,9 +59,12 @@
 
 <div class="game-container">
   {#if gameEnd}
-    <strong>{score}/{results.length}</strong>
-    <p>{pickEndMessage(score, results.length)}</p>
-    <button>back to main screen</button>
+    <div class="game-end">
+      <p>Your score is...</p>
+      <strong>{score}/{results.length}</strong>
+      <p>{pickEndMessage(score, results.length)}</p>
+      <button>Back to main screen</button>
+    </div>
   {:else}
     {#await promises[i] then [a, b]}
       <div class="game">
@@ -72,6 +75,8 @@
             on:select={() => {
               submit(a, b, 1);
             }}
+            winner={a.price >= b.price}
+            showPrice={showIcon}
           />
         </div>
         <div>
@@ -92,6 +97,8 @@
             on:select={() => {
               submit(a, b, -1);
             }}
+            winner={b.price >= a.price}
+            showPrice={showIcon}
           />
         </div>
       </div>
@@ -194,6 +201,23 @@
 
     .same {
       height: 8em;
+    }
+
+    .game-end {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .game-end strong {
+      font-size: 6em;
+      font-weight: 700;
     }
   }
 </style>
