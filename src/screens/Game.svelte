@@ -16,6 +16,16 @@
   );
 
   let i = 0;
+
+  const submit = (a, b, sign) => {
+    const result = Math.sign(a.price - b.price) === sign ? 'right' : 'wrong';
+    console.log({ result });
+    if (i < selection.length - 1) {
+      i += 1;
+    } else {
+      // TODO end game
+    }
+  };
 </script>
 
 <header>
@@ -29,13 +39,33 @@
   {#await promises[i] then [a, b]}
     <div class="game">
       <div class="card-container">
-        <Card celeb={a} />
+        <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
+        <Card
+          celeb={a}
+          on:select={() => {
+            submit(a, b, 1);
+          }}
+        />
       </div>
       <div>
-        <button class="same"> Same price </button>
+        <!-- the sign is 0 because we're gessing that a.price = b.price, and therefore Math.sign(a.price - b.price) = 0 -->
+        <button
+          class="same"
+          on:click={() => {
+            submit(a, b, 0);
+          }}
+        >
+          Same price
+        </button>
       </div>
       <div class="card-container">
-        <Card celeb={b} />
+        <!-- the sign is -1 because we're gessing that a.price < b.price, and therefore Math.sign(a.price - b.price) = -1 -->
+        <Card
+          celeb={b}
+          on:select={() => {
+            submit(a, b, -1);
+          }}
+        />
       </div>
     </div>
   {:catch}
