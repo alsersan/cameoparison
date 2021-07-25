@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
   import { sleep } from '../utils';
   import { pickRandom } from '../utils';
   import Card from '../components/Card.svelte';
@@ -17,6 +18,7 @@
     Promise.all([loadDetails(round.a.id), loadDetails(round.b.id)])
   );
 
+  const dispatch = createEventDispatcher();
   let i = 0;
   let lastResult;
   let showIcon;
@@ -63,7 +65,7 @@
       <p>Your score is...</p>
       <strong>{score}/{results.length}</strong>
       <p>{pickEndMessage(score, results.length)}</p>
-      <button>Back to main screen</button>
+      <button on:click={() => dispatch('restart')}>Back to main screen</button>
     </div>
   {:else}
     {#await promises[i] then [a, b]}
