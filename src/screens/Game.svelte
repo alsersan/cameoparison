@@ -97,6 +97,11 @@
     align-items: center;
   }
 
+  .same {
+    width: 100%;
+    margin: 0;
+  }
+
   .error {
     color: red;
   }
