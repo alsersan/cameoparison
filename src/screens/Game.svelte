@@ -1,5 +1,6 @@
 <script>
   import { sleep } from '../utils';
+  import { pickRandom } from '../utils';
   import Card from '../components/Card.svelte';
 
   export let selection;
@@ -19,66 +20,87 @@
   let i = 0;
   let lastResult;
   let showIcon;
+  let gameEnd = false;
   const results = Array(selection.length);
+
+  $: score = results.filter((x) => x === 'right').length;
 
   const submit = async (a, b, sign) => {
     lastResult = Math.sign(a.price - b.price) === sign ? 'right' : 'wrong';
     showIcon = true;
-
     await sleep(1500);
     showIcon = false;
     results[i] = lastResult;
     if (i < selection.length - 1) {
       i += 1;
     } else {
-      // TODO end game
+      gameEnd = true;
     }
+  };
+
+  const pickEndMessage = (rightAnswers, questions) => {
+    const ratio = rightAnswers / questions;
+    if (ratio < 0.5)
+      return pickRandom(['Ouch', `That wasn't very good`, 'Must try harder']);
+    if (ratio >= 0.5 && ratio < 0.8)
+      return pickRandom(['Not bad!', 'Keep practicing!']);
+    if (ratio >= 0.8 && ratio < 1)
+      return pickRandom(['So close!', 'Almost there!']);
+    if (ratio === 1) return pickRandom(['You rock!', 'Flawless victory']);
   };
 </script>
 
 <header>
   <p>
-    Tap on the more monetisable celebrity's face, or tap 'same price' if society
-    values them equally.
+    {#if !gameEnd}
+      Tap on the more monetisable celebrity's face, or tap 'same price' if
+      society values them equally.
+    {/if}
   </p>
 </header>
 
 <div class="game-container">
-  {#await promises[i] then [a, b]}
-    <div class="game">
-      <div class="card-container">
-        <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
-        <Card
-          celeb={a}
-          on:select={() => {
-            submit(a, b, 1);
-          }}
-        />
+  {#if gameEnd}
+    <strong>{score}/{results.length}</strong>
+    <p>{pickEndMessage(score, results.length)}</p>
+    <button>back to main screen</button>
+  {:else}
+    {#await promises[i] then [a, b]}
+      <div class="game">
+        <div class="card-container">
+          <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
+          <Card
+            celeb={a}
+            on:select={() => {
+              submit(a, b, 1);
+            }}
+          />
+        </div>
+        <div>
+          <!-- the sign is 0 because we're gessing that a.price = b.price, and therefore Math.sign(a.price - b.price) = 0 -->
+          <button
+            class="same"
+            on:click={() => {
+              submit(a, b, 0);
+            }}
+          >
+            Same price
+          </button>
+        </div>
+        <div class="card-container">
+          <!-- the sign is -1 because we're gessing that a.price < b.price, and therefore Math.sign(a.price - b.price) = -1 -->
+          <Card
+            celeb={b}
+            on:select={() => {
+              submit(a, b, -1);
+            }}
+          />
+        </div>
       </div>
-      <div>
-        <!-- the sign is 0 because we're gessing that a.price = b.price, and therefore Math.sign(a.price - b.price) = 0 -->
-        <button
-          class="same"
-          on:click={() => {
-            submit(a, b, 0);
-          }}
-        >
-          Same price
-        </button>
-      </div>
-      <div class="card-container">
-        <!-- the sign is -1 because we're gessing that a.price < b.price, and therefore Math.sign(a.price - b.price) = -1 -->
-        <Card
-          celeb={b}
-          on:select={() => {
-            submit(a, b, -1);
-          }}
-        />
-      </div>
-    </div>
-  {:catch}
-    <p class="error">Ooops! Failed to load data</p>
-  {/await}
+    {:catch}
+      <p class="error">Ooops! Failed to load data</p>
+    {/await}
+  {/if}
 </div>
 
 {#if showIcon}
