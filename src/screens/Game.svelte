@@ -1,4 +1,5 @@
 <script>
+  import { sleep } from '../utils';
   import Card from '../components/Card.svelte';
 
   export let selection;
@@ -16,10 +17,15 @@
   );
 
   let i = 0;
+  let lastResult;
+  let showIcon;
 
-  const submit = (a, b, sign) => {
-    const result = Math.sign(a.price - b.price) === sign ? 'right' : 'wrong';
-    console.log({ result });
+  const submit = async (a, b, sign) => {
+    lastResult = Math.sign(a.price - b.price) === sign ? 'right' : 'wrong';
+    showIcon = true;
+
+    await sleep(1500);
+    showIcon = false;
     if (i < selection.length - 1) {
       i += 1;
     } else {
@@ -73,6 +79,14 @@
   {/await}
 </div>
 
+{#if showIcon}
+  <img
+    class="giant-result"
+    src="/icons/{lastResult}.svg"
+    alt="{lastResult} answer"
+  />
+{/if}
+
 <div class="results">
   <p>Results go here</p>
 </div>
@@ -104,6 +118,15 @@
 
   .error {
     color: red;
+  }
+
+  .giant-result {
+    position: fixed;
+    width: 50vmin;
+    height: 50vmin;
+    left: calc(50vw - 25vmin);
+    top: calc(50vh - 25vmin);
+    opacity: 0.5;
   }
 
   @media (min-width: 640px) {
