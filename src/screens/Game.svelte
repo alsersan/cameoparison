@@ -1,5 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { fly, crossfade } from 'svelte/transition';
+  import * as eases from 'svelte/easing';
   import { sleep, pickRandom, loadImage } from '../utils';
   import Card from '../components/Card.svelte';
 
@@ -19,6 +21,12 @@
   );
 
   const dispatch = createEventDispatcher();
+  const [send, receive] = crossfade({
+    easing: eases.cubicOut,
+    duration: 300,
+  });
+
+  let ready = true;
   let i = 0;
   let lastResult;
   let showIcon;
@@ -30,9 +38,10 @@
   const submit = async (a, b, sign) => {
     lastResult = Math.sign(a.price - b.price) === sign ? 'right' : 'wrong';
     showIcon = true;
-    await sleep(1500);
+    await sleep(1200);
     showIcon = false;
     results[i] = lastResult;
+    await sleep(400);
     if (i < selection.length - 1) {
       i += 1;
     } else {
@@ -67,13 +76,19 @@
       <p>{pickEndMessage(score, results.length)}</p>
       <button on:click={() => dispatch('restart')}>Back to main screen</button>
     </div>
-  {:else}
+  {:else if ready}
     {#await promises[i]}
       <div class="loading">
         <div class="loading-animation">Loading</div>
       </div>
     {:then [a, b]}
-      <div class="game">
+      <div
+        class="game"
+        in:fly={{ duration: 200, y: 20 }}
+        out:fly={{ duration: 200, y: -20 }}
+        on:outrostart={() => (ready = false)}
+        on:outroend={() => (ready = true)}
+      >
         <div class="card-container">
           <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
           <Card
@@ -116,6 +131,8 @@
 
 {#if showIcon}
   <img
+    in:fly={{ x: 100, duration: 200 }}
+    out:send={{ key: i }}
     class="giant-result"
     src="/icons/{lastResult}.svg"
     alt="{lastResult} answer"
@@ -126,10 +143,14 @@
   class="results"
   style="grid-template-columns: repeat({results.length}, 1fr);"
 >
-  {#each results as result}
+  {#each results as result, i}
     <span class="result">
       {#if result}
-        <img src="/icons/{result}.svg" alt="{result} answer" />
+        <img
+          src="/icons/{result}.svg"
+          alt="{result} answer"
+          in:receive={{ key: i }}
+        />
       {/if}
     </span>
   {/each}
