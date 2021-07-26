@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { fly, crossfade } from 'svelte/transition';
+  import { fly, crossfade, scale } from 'svelte/transition';
   import * as eases from 'svelte/easing';
   import { sleep, pickRandom, loadImage } from '../utils';
   import Card from '../components/Card.svelte';
@@ -69,63 +69,69 @@
 </header>
 
 <div class="game-container">
-  {#if gameEnd}
-    <div class="game-end">
-      <p>Your score is...</p>
-      <strong>{score}/{results.length}</strong>
-      <p>{pickEndMessage(score, results.length)}</p>
-      <button on:click={() => dispatch('restart')}>Back to main screen</button>
-    </div>
-  {:else if ready}
-    {#await promises[i]}
-      <div class="loading">
-        <div class="loading-animation">Loading</div>
-      </div>
-    {:then [a, b]}
+  {#if ready}
+    {#if gameEnd}
       <div
-        class="game"
-        in:fly={{ duration: 200, y: 20 }}
-        out:fly={{ duration: 200, y: -20 }}
-        on:outrostart={() => (ready = false)}
-        on:outroend={() => (ready = true)}
+        class="game-end"
+        in:scale={{ easing: eases.elasticOut, duration: 800 }}
       >
-        <div class="card-container">
-          <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
-          <Card
-            celeb={a}
-            on:select={() => {
-              submit(a, b, 1);
-            }}
-            winner={a.price >= b.price}
-            showPrice={showIcon}
-          />
-        </div>
-        <div>
-          <!-- the sign is 0 because we're gessing that a.price = b.price, and therefore Math.sign(a.price - b.price) = 0 -->
-          <button
-            class="same"
-            on:click={() => {
-              submit(a, b, 0);
-            }}
-          >
-            Same price
-          </button>
-        </div>
-        <div class="card-container">
-          <!-- the sign is -1 because we're gessing that a.price < b.price, and therefore Math.sign(a.price - b.price) = -1 -->
-          <Card
-            celeb={b}
-            on:select={() => {
-              submit(a, b, -1);
-            }}
-            winner={b.price >= a.price}
-            showPrice={showIcon}
-          />
-        </div>
+        <p>Your score is...</p>
+        <strong>{score}/{results.length}</strong>
+        <p>{pickEndMessage(score, results.length)}</p>
+        <button on:click={() => dispatch('restart')}>Back to main screen</button
+        >
       </div>
-    {:catch}
-      <p class="error">Ooops! Failed to load data</p>
-    {/await}
+    {:else}
+      {#await promises[i]}
+        <div class="loading">
+          <div class="loading-animation">Loading</div>
+        </div>
+      {:then [a, b]}
+        <div
+          class="game"
+          in:fly={{ duration: 200, y: 20 }}
+          out:fly={{ duration: 200, y: -20 }}
+          on:outrostart={() => (ready = false)}
+          on:outroend={() => (ready = true)}
+        >
+          <div class="card-container">
+            <!-- the sign is 1 because we're gessing that a.price > b.price, and therefore Math.sign(a.price - b.price) = 1 -->
+            <Card
+              celeb={a}
+              on:select={() => {
+                submit(a, b, 1);
+              }}
+              winner={a.price >= b.price}
+              showPrice={showIcon}
+            />
+          </div>
+          <div>
+            <!-- the sign is 0 because we're gessing that a.price = b.price, and therefore Math.sign(a.price - b.price) = 0 -->
+            <button
+              class="same"
+              on:click={() => {
+                submit(a, b, 0);
+              }}
+            >
+              Same price
+            </button>
+          </div>
+          <div class="card-container">
+            <!-- the sign is -1 because we're gessing that a.price < b.price, and therefore Math.sign(a.price - b.price) = -1 -->
+            <Card
+              celeb={b}
+              on:select={() => {
+                submit(a, b, -1);
+              }}
+              winner={b.price >= a.price}
+              showPrice={showIcon}
+            />
+          </div>
+        </div>
+      {:catch}
+        <p class="error">Ooops! Failed to load data</p>
+      {/await}
+    {/if}
   {/if}
 </div>
 
