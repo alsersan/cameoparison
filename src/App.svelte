@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { select } from './select';
+  import { loadImage } from './utils';
   import Welcome from './screens/Welcome.svelte';
   import Game from './screens/Game.svelte';
 
@@ -37,6 +38,8 @@
 
   onMount(() => {
     celebsPromise = loadCelebs();
+    loadImage('icons/right.svg');
+    loadImage('icons/wrong.svg');
   });
 </script>
 

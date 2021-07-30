@@ -140,7 +140,7 @@
     in:fly={{ x: 100, duration: 200 }}
     out:send={{ key: i }}
     class="giant-result"
-    src="/icons/{lastResult}.svg"
+    src="icons/{lastResult}.svg"
     alt="{lastResult} answer"
   />
 {/if}
@@ -153,7 +153,7 @@
     <span class="result">
       {#if result}
         <img
-          src="/icons/{result}.svg"
+          src="icons/{result}.svg"
           alt="{result} answer"
           in:receive={{ key: i }}
         />
