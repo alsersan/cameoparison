@@ -22,8 +22,13 @@
 </script>
 
 <header>
-  <h1>
+  <!-- This doesn't work in production. Problem with the url in the css -->
+  <!-- <h1>
     CameoP<span class="logo">a</span>rison
+  </h1>
+ -->
+  <h1>
+    CameoP<img class="logo" src="icons/compare.svg" alt="compare icon" />rison
   </h1>
 
   <p>
@@ -58,7 +63,8 @@
     margin: 0 auto 1em auto;
   }
 
-  .logo {
+  /* This doesn't work in production. Problem with the url */
+  /* .logo {
     display: inline-block;
     background: url(/icons/compare.svg) 50% 50% no-repeat;
     background-size: auto;
@@ -68,6 +74,14 @@
     transform: scale(1.4);
     left: 0.02em;
     text-indent: -9999px;
+  } */
+
+  .logo {
+    display: inline-block;
+    width: 0.8em;
+    top: 0.05em;
+    transform: scale(1.4);
+    left: 0.02em;
   }
 
   .categories {
